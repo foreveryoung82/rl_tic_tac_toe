@@ -34,9 +34,11 @@ def training_loop(params: TrainingLoopParams) -> TrainingLoop:
     return TrainingLoop(params)
 
 
-@patch("rl_tic_tac_toe.trainingloop.Evaluator")
+@patch("rl_tic_tac_toe.trainingloop.TrainingReporter")
+@patch("rl_tic_tac_toe.trainingloop.TrainingEpisode")
 def test_training_loop_run(
-    mock_evaluator: MagicMock,
+    mock_training_episode: MagicMock,
+    mock_training_reporter: MagicMock,
     agent_x: QLearningAgent,
     agent_o: QLearningAgent,
     snapshot_pool: SnapshotPool,
@@ -44,18 +46,6 @@ def test_training_loop_run(
     """Test the run method of the TrainingLoop."""
     params = TrainingLoopParams(episodes=100, agent_x=agent_x, agent_o=agent_o)
     loop = TrainingLoop(params, rng=Random(42))
-
-    # Mock the evaluator to avoid external dependencies
-    mock_evaluator.evaluate_agents.return_value = {
-        "x_wins": 1,
-        "o_wins": 0,
-        "draws": 0,
-    }
-    mock_evaluator.evaluate_vs_random.return_value = {
-        "wins": 1,
-        "losses": 0,
-        "draws": 0,
-    }
 
     with patch("builtins.print") as mock_print:
         training_x, training_o = loop.run()
@@ -69,11 +59,13 @@ def test_training_loop_run(
         assert training_o.epsilon < 1.0
 
         # Check that the evaluation methods were called
-        assert mock_evaluator.evaluate_agents.call_count > 0
-        assert mock_evaluator.evaluate_vs_random.call_count > 0
+        assert mock_training_reporter.call_count == 1
+        assert mock_training_reporter.return_value.evaluate_and_snapshot_if_needed.call_count == 100
 
         # Check that the print function was called for progress reports
         assert mock_print.call_count > 0
+
+        assert mock_training_episode.run.call_count == 100
 
 
 @patch("rl_tic_tac_toe.trainingloop.pick_agent")
@@ -106,17 +98,6 @@ def test_adjust_learning_params(params: TrainingLoopParams) -> None:
 
     assert agent_x.alpha < initial_alpha
     assert agent_x.epsilon < initial_epsilon
-
-
-def test_run_snapshot(training_loop: TrainingLoop) -> None:
-    """Test the run_snapshot method."""
-    loop = training_loop
-    initial_snapshot_count = len(loop.snapshot_pool[Player.PLAYER_X.value])
-
-    with patch("builtins.print"):
-        loop.run_snapshot(0, Player.PLAYER_X)
-
-    assert len(loop.snapshot_pool[Player.PLAYER_X.value]) == initial_snapshot_count + 1
 
 
 def test_init_with_custom_args(
