@@ -47,8 +47,8 @@ def ask_for_selecting_play_order() -> Player:
     while True:
         user_input = input("您想玩 'X' (先手)还是 'O' (后手)? ").upper()
         match user_input:
-            case player if player in Player:
-                assert isinstance(player, Player)
+            case player_str if player_str in Player:
+                player = Player(player_str)
                 return player.opponent()
             case _:
                 continue
