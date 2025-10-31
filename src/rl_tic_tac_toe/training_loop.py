@@ -2,11 +2,12 @@
 
 import time
 from dataclasses import dataclass
-from math import pow
 from random import Random
 from typing import Optional
 
-from .learning_param_scheduler import LearningParamPolicy, LearningParamScheduler
+from .learning_param_scheduler import (
+    LearningParamScheduler,
+)
 from .player import Player
 from .q_learning_agent import QLearningAgent
 from .snapshot_pool import SnapshotPool
@@ -52,17 +53,13 @@ class TrainingLoop:
         }
         self.alpha_scheduler = params.alpha_scheduler or LearningParamScheduler(
             episodes=params.episodes,
-            policy=LearningParamPolicy.EXPONENTIAL_DECAY,
             start_value=ALPHA_START,
             min_value=ALPHA_MIN,
-            decay_value=pow(ALPHA_MIN / ALPHA_START, 1.0 / params.episodes),
         )
         self.epsilon_scheduler = params.epsilon_scheduler or LearningParamScheduler(
             episodes=params.episodes,
-            policy=LearningParamPolicy.EXPONENTIAL_DECAY,
             start_value=EPSILON_START,
             min_value=EPSILON_MIN,
-            decay_value=pow(EPSILON_MIN / EPSILON_START, 1.0 / params.episodes),
         )
         self.rng = rng
         self._reporter = TrainingReporter(
