@@ -112,7 +112,7 @@ class TrainingLoop:
 def pick_agent(
     active_agent: QLearningAgent, snapshot_pool: list[QLearningAgent], rng: Random
 ) -> QLearningAgent:
-    """Pick an agent, either the active one or a historical snapshot."""
+    """Pick an agent, either the training one or a historical snapshot."""
     picked = active_agent
     if snapshot_pool and rng.random() < HISTORICAL_OPPONENT_PROB:
         picked = rng.choice(snapshot_pool)
