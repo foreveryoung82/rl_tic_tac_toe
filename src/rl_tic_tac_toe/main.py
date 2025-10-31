@@ -14,6 +14,7 @@ def main() -> None:
         print("3. 观看AI互相对战")
         print("4. 退出")
         choice = input("请输入您的选择: ")
+        choice = choice.strip()
         if choice == "1":
             while True:
                 episodes_str = input("请输入训练总局数 (默认: 200000): ")
