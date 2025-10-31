@@ -48,7 +48,7 @@ class QLearningAgent:
         if self.is_snapshot:
             raise ImmutableSnapshotError()
         if not 0.0 <= value <= 1.0:
-            raise ValueError("Epsilon must be between 0 and 1.")
+            raise ValueError(f"{value}: Epsilon must be between 0 and 1.")
         self._epsilon = value
 
     @property
@@ -60,7 +60,7 @@ class QLearningAgent:
         if self.is_snapshot:
             raise ImmutableSnapshotError()
         if not 0.0 <= value <= 1.0:
-            raise ValueError("Alpha must be between 0 and 1.")
+            raise ValueError(f"{value}: Alpha must be between 0 and 1.")
         self._alpha = value
 
     @property
@@ -72,7 +72,7 @@ class QLearningAgent:
         if self.is_snapshot:
             raise ImmutableSnapshotError()
         if not 0.0 <= value <= 1.0:
-            raise ValueError("Gamma must be between 0 and 1.")
+            raise ValueError(f"{value}: Gamma must be between 0 and 1.")
         self._gamma = value
 
     @property

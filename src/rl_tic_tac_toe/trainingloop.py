@@ -2,6 +2,7 @@
 
 import time
 from dataclasses import dataclass
+from math import pow
 from random import Random
 from typing import Optional
 
@@ -15,6 +16,10 @@ from .trainingepisode import TrainingEpisode
 EVALUATION_NUM = 20
 SNAPSHOT_NUM = 10
 HISTORICAL_OPPONENT_PROB = 0.3  # 挑战历史对手的概率
+ALPHA_START = 0.5
+ALPHA_MIN = 0.01
+EPSILON_START = 1.0
+EPSILON_MIN = 0.01
 
 
 @dataclass(slots=True)
@@ -42,23 +47,23 @@ class TrainingLoop:
         assert params.agent_o
         self._agent_o = params.agent_o
         self.snapshot_pool = params.snapshot_pool or {
-            "X": [params.agent_x],
-            "O": [params.agent_o],
+            "X": [params.agent_x.snapshot()],
+            "O": [params.agent_o.snapshot()],
         }
         self.evaluation_interval = max((1, params.episodes // EVALUATION_NUM))
         self.alpha_scheduler = params.alpha_scheduler or LearningParamScheduler(
             episodes=params.episodes,
             policy=LearningParamPolicy.EXPONENTIAL_DECAY,
-            start_value=0.5,
-            min_value=0.01,
-            decay_value=0.9999,
+            start_value=ALPHA_START,
+            min_value=ALPHA_MIN,
+            decay_value=pow(ALPHA_MIN / ALPHA_START, 1.0 / params.episodes),
         )
         self.epsilon_scheduler = params.epsilon_scheduler or LearningParamScheduler(
             episodes=params.episodes,
             policy=LearningParamPolicy.EXPONENTIAL_DECAY,
-            start_value=1.0,
-            min_value=0.01,
-            decay_value=0.9999,
+            start_value=EPSILON_START,
+            min_value=EPSILON_MIN,
+            decay_value=pow(EPSILON_MIN / EPSILON_START, 1.0 / params.episodes),
         )
         self.rng = rng
 
