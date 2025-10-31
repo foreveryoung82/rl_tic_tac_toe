@@ -46,8 +46,16 @@ def test_training_loop_run(
     loop = TrainingLoop(params, rng=Random(42))
 
     # Mock the evaluator to avoid external dependencies
-    mock_evaluator.evaluate_agents = MagicMock()
-    mock_evaluator.evaluate_vs_random = MagicMock()
+    mock_evaluator.evaluate_agents.return_value = {
+        "x_wins": 1,
+        "o_wins": 0,
+        "draws": 0,
+    }
+    mock_evaluator.evaluate_vs_random.return_value = {
+        "wins": 1,
+        "losses": 0,
+        "draws": 0,
+    }
 
     with patch("builtins.print") as mock_print:
         training_x, training_o = loop.run()

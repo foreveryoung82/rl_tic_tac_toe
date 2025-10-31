@@ -119,9 +119,49 @@ class TrainingLoop:
         print(
             f"\n{'=' * 15} 训练进度: {progress_percent:.0f}% (回合 {episode_idx + 1}/{self._episodes}) {'=' * 15}"
         )
-        Evaluator.evaluate_agents(self._agent_x, self._agent_o)
-        Evaluator.evaluate_vs_random(self._agent_x, Player.PLAYER_X)
-        Evaluator.evaluate_vs_random(self._agent_o, Player.PLAYER_O)
+        ai_vs_ai_results = Evaluator.evaluate_agents(self._agent_x, self._agent_o)
+        print("\n--- 评估: AI vs. AI ---")
+        total_games = sum(ai_vs_ai_results.values())
+        print(
+            f"X 胜率: {ai_vs_ai_results['x_wins']} ({(ai_vs_ai_results['x_wins'] / total_games) * 100:.2f}%)"
+        )
+        print(
+            f"O 胜率: {ai_vs_ai_results['o_wins']} ({(ai_vs_ai_results['o_wins'] / total_games) * 100:.2f}%)"
+        )
+        print(
+            f"平局率: {ai_vs_ai_results['draws']} ({(ai_vs_ai_results['draws'] / total_games) * 100:.2f}%)"
+        )
+
+        x_vs_random_results = Evaluator.evaluate_vs_random(
+            self._agent_x, Player.PLAYER_X
+        )
+        print(f"\n--- 评估: AI (X) vs. 随机玩家 ---")
+        total_games = sum(x_vs_random_results.values())
+        print(
+            f"AI 胜率: {x_vs_random_results['wins']} / {total_games} ({(x_vs_random_results['wins'] / total_games) * 100:.2f}%)"
+        )
+        print(
+            f"AI 败率: {x_vs_random_results['losses']} / {total_games} ({(x_vs_random_results['losses'] / total_games) * 100:.2f}%)"
+        )
+        print(
+            f"平局率: {x_vs_random_results['draws']} / {total_games} ({(x_vs_random_results['draws'] / total_games) * 100:.2f}%)"
+        )
+
+        o_vs_random_results = Evaluator.evaluate_vs_random(
+            self._agent_o, Player.PLAYER_O
+        )
+        print(f"\n--- 评估: AI (O) vs. 随机玩家 ---")
+        total_games = sum(o_vs_random_results.values())
+        print(
+            f"AI 胜率: {o_vs_random_results['wins']} / {total_games} ({(o_vs_random_results['wins'] / total_games) * 100:.2f}%)"
+        )
+        print(
+            f"AI 败率: {o_vs_random_results['losses']} / {total_games} ({(o_vs_random_results['losses'] / total_games) * 100:.2f}%)"
+        )
+        print(
+            f"平局率: {o_vs_random_results['draws']} / {total_games} ({(o_vs_random_results['draws'] / total_games) * 100:.2f}%)"
+        )
+
         print(f"{'=' * 50}")
 
     def run_snapshot(self, episode_idx: int, player: Player) -> None:

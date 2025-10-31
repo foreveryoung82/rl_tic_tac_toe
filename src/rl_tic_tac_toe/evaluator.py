@@ -9,7 +9,7 @@ class Evaluator:
     @staticmethod
     def evaluate_agents(
         agent_x: QLearningAgent, agent_o: QLearningAgent, num_games: int = 1000
-    ) -> None:
+    ) -> dict[str, int]:
         """
         Evaluates two Q-learning agents playing against each other in num_games rounds.
         Disables exploration (epsilon=0) to assess performance under optimal play.
@@ -34,18 +34,14 @@ class Evaluator:
                 o_wins += 1
             else:
                 draws += 1
-        total_games = x_wins + o_wins + draws
-        print("\n--- 评估: AI vs. AI ---")
-        print(f"X 胜率: {x_wins} ({(x_wins / total_games) * 100:.2f}%)")
-        print(f"O 胜率: {o_wins} ({(o_wins / total_games) * 100:.2f}%)")
-        print(f"平局率: {draws} ({(draws / total_games) * 100:.2f}%)")
+        return {"x_wins": x_wins, "o_wins": o_wins, "draws": draws}
 
     @staticmethod
     def evaluate_vs_random(
         agent_to_test: QLearningAgent,
         agent_letter: Player,
         num_games: int = 1000,
-    ) -> None:
+    ) -> dict[str, int]:
         """Evaluates the AI's performance against a random player over num_games rounds."""
         random_player = RandomPlayer(agent_letter.opponent())
         wins, losses, draws = 0, 0, 0
@@ -66,9 +62,4 @@ class Evaluator:
                 draws += 1
             else:
                 losses += 1
-        # agent_to_test._epsilon = original_epsilon
-        total_games = wins + losses + draws
-        print(f"\n--- 评估: AI ({agent_letter}) vs. 随机玩家 ---")
-        print(f"AI 胜率: {wins} / {num_games} ({(wins / total_games) * 100:.2f}%)")
-        print(f"AI 败率: {losses} / {num_games} ({(losses / total_games) * 100:.2f}%)")
-        print(f"平局率: {draws} / {num_games} ({(draws / total_games) * 100:.2f}%)")
+        return {"wins": wins, "losses": losses, "draws": draws}

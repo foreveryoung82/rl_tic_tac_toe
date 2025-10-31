@@ -8,3 +8,4 @@
 .pytest_cache/
 src/rl_tic_tac_toe.egg-info/
 .pre-commit-config.yaml
+.coverage
