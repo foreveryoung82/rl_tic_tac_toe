@@ -2,15 +2,15 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from rl_tic_tac_toe.gamebattle import (
+from rl_tic_tac_toe.game_battle import (
     GameBattle,
     announce_game_result,
     ask_for_selecting_play_order,
     play_turn,
 )
 from rl_tic_tac_toe.player import Player
-from rl_tic_tac_toe.qlearningagent import QLearningAgent
-from rl_tic_tac_toe.tictactoe import TicTacToe
+from rl_tic_tac_toe.q_learning_agent import QLearningAgent
+from rl_tic_tac_toe.tic_tac_toe import TicTacToe
 
 
 @pytest.fixture

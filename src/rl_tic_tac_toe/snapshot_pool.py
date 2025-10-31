@@ -1,6 +1,6 @@
 from typing import TypedDict
 
-from .qlearningagent import QLearningAgent
+from .q_learning_agent import QLearningAgent
 
 
 class SnapshotPool(TypedDict, total=True):

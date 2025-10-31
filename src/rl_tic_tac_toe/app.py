@@ -1,7 +1,7 @@
-from .gamebattle import GameBattle
+from .game_battle import GameBattle
 from .player import Player
-from .qlearningagent import QLearningAgent
-from .trainingloop import TrainingLoop, TrainingLoopParams
+from .q_learning_agent import QLearningAgent
+from .training_loop import TrainingLoop, TrainingLoopParams
 
 
 class TicTacToeApp:
