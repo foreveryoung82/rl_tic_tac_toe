@@ -76,7 +76,7 @@ class TrainingLoop:
         for episode_idx in range(self._episodes):
             playing_x, playing_o = self.pick_opponents(episode_idx, self.rng)
             TrainingEpisode.run(playing_x, playing_o)
-            self.adjust_learning_params(episode_idx)
+            self.update_learning_params(episode_idx)
             self._reporter.evaluate_and_snapshot_if_needed(episode_idx)
 
         end_time = time.time()
@@ -99,7 +99,7 @@ class TrainingLoop:
 
         return playing_x, playing_o
 
-    def adjust_learning_params(self, episode_idx: int) -> None:
+    def update_learning_params(self, episode_idx: int) -> None:
         """Adjust learning parameters for the agents."""
         agent_x = self._agent_x
         agent_o = self._agent_o

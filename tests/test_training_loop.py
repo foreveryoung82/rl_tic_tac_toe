@@ -97,7 +97,7 @@ def test_adjust_learning_params(params: TrainingLoopParams) -> None:
     initial_alpha = agent_x.alpha
     initial_epsilon = agent_x.epsilon
 
-    loop.adjust_learning_params(0)
+    loop.update_learning_params(0)
 
     assert agent_x.alpha < initial_alpha
     assert agent_x.epsilon < initial_epsilon
