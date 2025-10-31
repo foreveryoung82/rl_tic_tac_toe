@@ -1,8 +1,8 @@
-from .actionpolicy import ActionPolicy
+from .action_policy import ActionPolicy
 from .player import Player
-from .qlearningagent import QLearningAgent
-from .randomplayer import RandomPlayer
-from .tictactoe import TicTacToe
+from .q_learning_agent import QLearningAgent
+from .random_player import RandomPlayer
+from .tic_tac_toe import TicTacToe
 
 
 class Evaluator:

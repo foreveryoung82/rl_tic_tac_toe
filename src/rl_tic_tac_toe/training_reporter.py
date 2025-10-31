@@ -1,7 +1,7 @@
 from .evaluator import Evaluator
 from .player import Player
-from .qlearningagent import QLearningAgent
-from .snapshotpool import SnapshotPool
+from .q_learning_agent import QLearningAgent
+from .snapshot_pool import SnapshotPool
 
 
 class TrainingReporter:

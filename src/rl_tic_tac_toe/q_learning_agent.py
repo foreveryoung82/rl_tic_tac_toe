@@ -3,9 +3,9 @@
 import copy
 from random import Random
 
-from .actionpolicy import ActionPolicy
+from .action_policy import ActionPolicy
 from .player import Player
-from .tictactoe import TicTacToe
+from .tic_tac_toe import TicTacToe
 
 
 class ImmutableSnapshotError(Exception):

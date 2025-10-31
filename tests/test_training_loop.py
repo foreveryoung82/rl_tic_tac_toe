@@ -4,9 +4,9 @@ from unittest.mock import MagicMock, patch
 from pytest import fixture
 
 from rl_tic_tac_toe.player import Player
-from rl_tic_tac_toe.qlearningagent import QLearningAgent
-from rl_tic_tac_toe.snapshotpool import SnapshotPool
-from rl_tic_tac_toe.trainingloop import TrainingLoop, TrainingLoopParams
+from rl_tic_tac_toe.q_learning_agent import QLearningAgent
+from rl_tic_tac_toe.snapshot_pool import SnapshotPool
+from rl_tic_tac_toe.training_loop import TrainingLoop, TrainingLoopParams
 
 
 @fixture
@@ -34,8 +34,8 @@ def training_loop(params: TrainingLoopParams) -> TrainingLoop:
     return TrainingLoop(params)
 
 
-@patch("rl_tic_tac_toe.trainingloop.TrainingReporter")
-@patch("rl_tic_tac_toe.trainingloop.TrainingEpisode")
+@patch("rl_tic_tac_toe.training_loop.TrainingReporter")
+@patch("rl_tic_tac_toe.training_loop.TrainingEpisode")
 def test_training_loop_run(
     mock_training_episode: MagicMock,
     mock_training_reporter: MagicMock,
@@ -68,7 +68,7 @@ def test_training_loop_run(
         assert mock_training_episode.run.call_count == 100
 
 
-@patch("rl_tic_tac_toe.trainingloop.pick_agent")
+@patch("rl_tic_tac_toe.training_loop.pick_agent")
 def test_pick_opponents(mock_pick_agent: MagicMock, params: TrainingLoopParams) -> None:
     """Test the pick_opponents method."""
     loop = TrainingLoop(params, rng=Random(42))

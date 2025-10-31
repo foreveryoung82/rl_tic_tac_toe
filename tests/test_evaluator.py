@@ -4,7 +4,7 @@ import pytest
 
 from rl_tic_tac_toe.evaluator import Evaluator
 from rl_tic_tac_toe.player import Player
-from rl_tic_tac_toe.qlearningagent import QLearningAgent
+from rl_tic_tac_toe.q_learning_agent import QLearningAgent
 
 
 @pytest.fixture
@@ -39,7 +39,7 @@ def test_evaluate_vs_random(monkeypatch: pytest.MonkeyPatch) -> None:
     # Let the agent win in the first round and lose in the second round
     agent_to_test.choose_action.side_effect = [0, 1, 2, 0, 1, 5, 7, 8]
     monkeypatch.setattr(
-        "rl_tic_tac_toe.randomplayer.RandomPlayer.choose_action",
+        "rl_tic_tac_toe.random_player.RandomPlayer.choose_action",
         MagicMock(side_effect=[3, 4, 3, 4, 6, 8, 2, 5]),
     )
 

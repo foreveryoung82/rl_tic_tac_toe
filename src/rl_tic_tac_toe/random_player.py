@@ -1,7 +1,7 @@
 from random import Random
 
 from .player import Player
-from .tictactoe import TicTacToe
+from .tic_tac_toe import TicTacToe
 
 
 class RandomPlayer:

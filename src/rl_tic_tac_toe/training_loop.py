@@ -6,11 +6,11 @@ from math import pow
 from random import Random
 from typing import Optional
 
-from .learningparamscheduler import LearningParamPolicy, LearningParamScheduler
+from .learning_param_scheduler import LearningParamPolicy, LearningParamScheduler
 from .player import Player
-from .qlearningagent import QLearningAgent
-from .snapshotpool import SnapshotPool
-from .trainingepisode import TrainingEpisode
+from .q_learning_agent import QLearningAgent
+from .snapshot_pool import SnapshotPool
+from .training_episode import TrainingEpisode
 from .training_reporter import TrainingReporter
 
 EVALUATION_NUM = 20

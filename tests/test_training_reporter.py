@@ -3,8 +3,8 @@ from unittest.mock import MagicMock, patch
 from pytest import fixture
 
 from rl_tic_tac_toe.player import Player
-from rl_tic_tac_toe.qlearningagent import QLearningAgent
-from rl_tic_tac_toe.snapshotpool import SnapshotPool
+from rl_tic_tac_toe.q_learning_agent import QLearningAgent
+from rl_tic_tac_toe.snapshot_pool import SnapshotPool
 from rl_tic_tac_toe.training_reporter import TrainingReporter
 
 

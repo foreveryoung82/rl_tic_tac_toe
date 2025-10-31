@@ -2,10 +2,10 @@ import itertools
 from dataclasses import dataclass
 from typing import Sequence
 
-from .actionpolicy import ActionPolicy
+from .action_policy import ActionPolicy
 from .player import Player
-from .qlearningagent import QLearningAgent
-from .tictactoe import TicTacToe
+from .q_learning_agent import QLearningAgent
+from .tic_tac_toe import TicTacToe
 
 DRAW_GAME_REWARD = 0
 WINNER_REWARD = 1

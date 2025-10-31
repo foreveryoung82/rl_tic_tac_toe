@@ -2,7 +2,7 @@
 import pytest
 
 from rl_tic_tac_toe.player import Player
-from rl_tic_tac_toe.tictactoe import TicTacToe
+from rl_tic_tac_toe.tic_tac_toe import TicTacToe
 
 
 @pytest.fixture

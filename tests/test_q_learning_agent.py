@@ -2,13 +2,13 @@ from random import Random
 
 import pytest
 
-from rl_tic_tac_toe.actionpolicy import ActionPolicy
+from rl_tic_tac_toe.action_policy import ActionPolicy
 from rl_tic_tac_toe.player import Player
-from rl_tic_tac_toe.qlearningagent import (
+from rl_tic_tac_toe.q_learning_agent import (
     ImmutableSnapshotError,
     QLearningAgent,
 )
-from rl_tic_tac_toe.tictactoe import TicTacToe
+from rl_tic_tac_toe.tic_tac_toe import TicTacToe
 
 
 @pytest.fixture
