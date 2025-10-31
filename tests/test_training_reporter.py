@@ -39,7 +39,8 @@ def test_run_snapshot(training_reporter: TrainingReporter) -> None:
         reporter._run_snapshot(0, Player.PLAYER_X)
 
     assert (
-        len(reporter._snapshot_pool[Player.PLAYER_X.value]) == initial_snapshot_count + 1
+        len(reporter._snapshot_pool[Player.PLAYER_X.value])
+        == initial_snapshot_count + 1
     )
 
 

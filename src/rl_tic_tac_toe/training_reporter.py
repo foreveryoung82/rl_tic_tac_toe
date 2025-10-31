@@ -5,7 +5,13 @@ from .snapshot_pool import SnapshotPool
 
 
 class TrainingReporter:
-    def __init__(self, agent_x: QLearningAgent, agent_o: QLearningAgent, episodes: int, snapshot_pool: SnapshotPool) -> None:
+    def __init__(
+        self,
+        agent_x: QLearningAgent,
+        agent_o: QLearningAgent,
+        episodes: int,
+        snapshot_pool: SnapshotPool,
+    ) -> None:
         self._agent_x = agent_x
         self._agent_o = agent_o
         self._episodes = episodes

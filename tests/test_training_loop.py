@@ -60,7 +60,10 @@ def test_training_loop_run(
 
         # Check that the evaluation methods were called
         assert mock_training_reporter.call_count == 1
-        assert mock_training_reporter.return_value.evaluate_and_snapshot_if_needed.call_count == 100
+        assert (
+            mock_training_reporter.return_value.evaluate_and_snapshot_if_needed.call_count
+            == 100
+        )
 
         # Check that the print function was called for progress reports
         assert mock_print.call_count > 0

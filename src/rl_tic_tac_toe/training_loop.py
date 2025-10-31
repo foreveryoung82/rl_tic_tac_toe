@@ -65,7 +65,9 @@ class TrainingLoop:
             decay_value=pow(EPSILON_MIN / EPSILON_START, 1.0 / params.episodes),
         )
         self.rng = rng
-        self._reporter = TrainingReporter(self._agent_x, self._agent_o, self._episodes, self.snapshot_pool)
+        self._reporter = TrainingReporter(
+            self._agent_x, self._agent_o, self._episodes, self.snapshot_pool
+        )
 
     def run(self) -> tuple[QLearningAgent, QLearningAgent]:
         """Run the training loop for a specified number of episodes."""
