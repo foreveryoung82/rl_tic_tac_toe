@@ -1,4 +1,4 @@
-from .app import TicTacToeApp
+from .tic_tac_toe_app import TicTacToeApp
 
 
 def main() -> None:
