@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock, call
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -26,10 +26,10 @@ def mock_agents() -> tuple[QLearningAgent, QLearningAgent]:
 
 
 def test_ask_for_selecting_play_order(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr("builtins.input", lambda _: "X")
+    monkeypatch.setattr("builtins.input", lambda _: "X")  # pyright: ignore[reportUnknownLambdaType, reportUnknownArgumentType]
     assert ask_for_selecting_play_order() == Player.PLAYER_O
 
-    monkeypatch.setattr("builtins.input", lambda _: "O")
+    monkeypatch.setattr("builtins.input", lambda _: "O")  # pyright: ignore[reportUnknownLambdaType, reportUnknownArgumentType]
     assert ask_for_selecting_play_order() == Player.PLAYER_X
 
 
@@ -39,11 +39,11 @@ def test_announce_game_result(
     mock_print = MagicMock()
     monkeypatch.setattr("builtins.print", mock_print)
 
-    mock_game.current_winner = Player.PLAYER_X
+    mock_game.current_winner = Player.PLAYER_X  # type: ignore
     announce_game_result(mock_game)
     mock_print.assert_called_with(f"胜利者是 {Player.PLAYER_X}!")
 
-    mock_game.current_winner = None
+    mock_game.current_winner = None  # type: ignore
     announce_game_result(mock_game)
     mock_print.assert_called_with("平局!")
 
@@ -55,11 +55,11 @@ def test_play_turn_human(
 ) -> None:
     mock_input = MagicMock(side_effect=["0"])
     monkeypatch.setattr("builtins.input", mock_input)
-    mock_game.empty_cells.return_value = [0, 1, 2]
+    mock_game.empty_cells.return_value = [0, 1, 2]  # type: ignore
 
     play_turn(Player.PLAYER_X, Player.PLAYER_X, mock_agents, mock_game)
 
-    mock_game.make_move.assert_called_with(0, Player.PLAYER_X)
+    mock_game.make_move.assert_called_with(0, Player.PLAYER_X)  # type: ignore
 
 
 def test_play_turn_ai(
@@ -69,14 +69,14 @@ def test_play_turn_ai(
 ) -> None:
     mock_print = MagicMock()
     monkeypatch.setattr("builtins.print", mock_print)
-    monkeypatch.setattr("time.sleep", lambda _: None)
+    monkeypatch.setattr("time.sleep", lambda _: None)  # pyright: ignore[reportUnknownLambdaType, reportUnknownArgumentType]
 
-    agent_x, agent_o = mock_agents
-    agent_o.choose_action.return_value = 0
+    _, agent_o = mock_agents
+    agent_o.choose_action.return_value = 0  # type: ignore
     play_turn(Player.PLAYER_O, Player.PLAYER_X, mock_agents, mock_game)
 
-    agent_o.choose_action.assert_called()
-    mock_game.make_move.assert_called_with(0, Player.PLAYER_O)
+    agent_o.choose_action.assert_called()  # type: ignore
+    mock_game.make_move.assert_called_with(0, Player.PLAYER_O)  # type: ignore
 
 
 def test_ai_vs_ai(
@@ -84,20 +84,14 @@ def test_ai_vs_ai(
 ) -> None:
     mock_print = MagicMock()
     monkeypatch.setattr("builtins.print", mock_print)
-    monkeypatch.setattr("time.sleep", lambda _: None)
+    monkeypatch.setattr("time.sleep", lambda _: None)  # pyright: ignore[reportUnknownLambdaType, reportUnknownArgumentType]
     agent_x, agent_o = mock_agents
 
-    def game_state_side_effect(*args, **kwargs):
-        if agent_x.choose_action.call_count <= 3:
-            return True
-        return False
+    agent_x.choose_action.side_effect = [0, 1, 2]  # type: ignore
+    agent_o.choose_action.side_effect = [3, 4]  # type: ignore
 
-    agent_x.choose_action.side_effect = [0, 1, 2]
-    agent_o.choose_action.side_effect = [3, 4]
-
-    game = TicTacToe()
     GameBattle.ai_vs_ai(agent_x, agent_o)
 
-    assert agent_x.choose_action.call_count == 3
-    assert agent_o.choose_action.call_count == 2
+    assert agent_x.choose_action.call_count == 3  # type: ignore
+    assert agent_o.choose_action.call_count == 2  # type: ignore
     assert "胜利者是 X!" in [c[0][0] for c in mock_print.call_args_list]

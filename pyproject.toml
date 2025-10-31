@@ -28,3 +28,31 @@ dev = [
 pythonpath = [
   "src"
 ]
+
+[tool.mypy]
+# -------------------- 全局设置 --------------------
+python_version = "3.12"
+strict = true # 保持全局严格
+# ... 其他全局设置 ...
+
+
+# -------------------- 针对 tests 目录的宽松设置 --------------------
+# 使用 [[tool.mypy.overrides]] 数组表格来定义模块覆盖
+[[tool.mypy.overrides]]
+module = "tests.*" # 匹配 tests 包/目录下的所有模块
+
+# 1. 禁用严格模式 (覆盖全局的 strict = True)
+strict = false
+
+# 2. 专门禁用对 untyped defs 的检查 (避免对测试函数签名的要求)
+disallow_untyped_defs = false
+
+# 3. 允许使用 'Any' 类型 (对 mock 代码至关重要)
+disallow_any_expr = false
+
+# 4. (可选) 忽略标记了 ignore type，但是 mypy 认为没有错误的地方
+# 有时候允许这个错误是为了规避 pylance/pyright 和 mypy 检查不一致的问题
+# disallow_unused_ignore = false
+
+# 5. (可选) 忽略所有错误，这是最宽松的做法
+# ignore_errors = true

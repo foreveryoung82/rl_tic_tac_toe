@@ -1,12 +1,10 @@
-from unittest.mock import MagicMock, call
+from unittest.mock import MagicMock
 
 import pytest
 
 from rl_tic_tac_toe.evaluator import Evaluator
 from rl_tic_tac_toe.player import Player
 from rl_tic_tac_toe.qlearningagent import QLearningAgent
-from rl_tic_tac_toe.randomplayer import RandomPlayer
-from rl_tic_tac_toe.tictactoe import TicTacToe
 
 
 @pytest.fixture
@@ -24,8 +22,8 @@ def test_evaluate_agents(
     agent_x, agent_o = mock_agents
 
     # Let agent_x win in the first round and draw in the second round
-    agent_x.choose_action.side_effect = [0, 1, 2, 0, 1, 8, 2, 5, 7]
-    agent_o.choose_action.side_effect = [3, 4, 5, 6, 7, 8]
+    agent_x.choose_action.side_effect = [0, 1, 2, 0, 1, 8, 2, 5, 7]  # type: ignore
+    agent_o.choose_action.side_effect = [3, 4, 5, 6, 7, 8]  # type: ignore
 
     result = Evaluator.evaluate_agents(agent_x, agent_o, num_games=2)
 

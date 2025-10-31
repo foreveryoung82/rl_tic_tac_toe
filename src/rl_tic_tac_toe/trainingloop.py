@@ -135,7 +135,7 @@ class TrainingLoop:
         x_vs_random_results = Evaluator.evaluate_vs_random(
             self._agent_x, Player.PLAYER_X
         )
-        print(f"\n--- 评估: AI (X) vs. 随机玩家 ---")
+        print("\n--- 评估: AI (X) vs. 随机玩家 ---")
         total_games = sum(x_vs_random_results.values())
         print(
             f"AI 胜率: {x_vs_random_results['wins']} / {total_games} ({(x_vs_random_results['wins'] / total_games) * 100:.2f}%)"
@@ -150,7 +150,7 @@ class TrainingLoop:
         o_vs_random_results = Evaluator.evaluate_vs_random(
             self._agent_o, Player.PLAYER_O
         )
-        print(f"\n--- 评估: AI (O) vs. 随机玩家 ---")
+        print("\n--- 评估: AI (O) vs. 随机玩家 ---")
         total_games = sum(o_vs_random_results.values())
         print(
             f"AI 胜率: {o_vs_random_results['wins']} / {total_games} ({(o_vs_random_results['wins'] / total_games) * 100:.2f}%)"
