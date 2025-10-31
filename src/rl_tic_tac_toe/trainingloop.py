@@ -6,12 +6,12 @@ from math import pow
 from random import Random
 from typing import Optional
 
-from .evaluator import Evaluator
 from .learningparamscheduler import LearningParamPolicy, LearningParamScheduler
 from .player import Player
 from .qlearningagent import QLearningAgent
 from .snapshotpool import SnapshotPool
 from .trainingepisode import TrainingEpisode
+from .training_reporter import TrainingReporter
 
 EVALUATION_NUM = 20
 SNAPSHOT_NUM = 10
@@ -50,7 +50,6 @@ class TrainingLoop:
             "X": [params.agent_x.snapshot()],
             "O": [params.agent_o.snapshot()],
         }
-        self.evaluation_interval = max((1, params.episodes // EVALUATION_NUM))
         self.alpha_scheduler = params.alpha_scheduler or LearningParamScheduler(
             episodes=params.episodes,
             policy=LearningParamPolicy.EXPONENTIAL_DECAY,
@@ -66,6 +65,7 @@ class TrainingLoop:
             decay_value=pow(EPSILON_MIN / EPSILON_START, 1.0 / params.episodes),
         )
         self.rng = rng
+        self._reporter = TrainingReporter(self._agent_x, self._agent_o, self._episodes, self.snapshot_pool)
 
     def run(self) -> tuple[QLearningAgent, QLearningAgent]:
         """Run the training loop for a specified number of episodes."""
@@ -75,7 +75,7 @@ class TrainingLoop:
             playing_x, playing_o = self.pick_opponents(episode_idx, self.rng)
             TrainingEpisode.run(playing_x, playing_o)
             self.adjust_learning_params(episode_idx)
-            self.evaluate_and_snapshot_if_needed(episode_idx)
+            self._reporter.evaluate_and_snapshot_if_needed(episode_idx)
 
         end_time = time.time()
         report_training_result(start_time, end_time)
@@ -105,70 +105,6 @@ class TrainingLoop:
         agent_x.alpha, agent_o.alpha = alpha, alpha
         epsilon = self.epsilon_scheduler.update(episode_idx)
         agent_x.epsilon, agent_o.epsilon = epsilon, epsilon
-
-    def evaluate_and_snapshot_if_needed(self, episode_idx: int) -> None:
-        if (episode_idx + 1) % self.evaluation_interval != 0:
-            return
-        self.run_evaluation(episode_idx)
-        self.run_snapshot(episode_idx, Player.PLAYER_X)
-        self.run_snapshot(episode_idx, Player.PLAYER_O)
-
-    def run_evaluation(self, episode_idx: int) -> None:
-        """Run evaluation of agents and report the results."""
-        progress_percent: float = ((episode_idx + 1) / self._episodes) * 100
-        print(
-            f"\n{'=' * 15} 训练进度: {progress_percent:.0f}% (回合 {episode_idx + 1}/{self._episodes}) {'=' * 15}"
-        )
-        ai_vs_ai_results = Evaluator.evaluate_agents(self._agent_x, self._agent_o)
-        print("\n--- 评估: AI vs. AI ---")
-        total_games = sum(ai_vs_ai_results.values())
-        print(
-            f"X 胜率: {ai_vs_ai_results['x_wins']} ({(ai_vs_ai_results['x_wins'] / total_games) * 100:.2f}%)"
-        )
-        print(
-            f"O 胜率: {ai_vs_ai_results['o_wins']} ({(ai_vs_ai_results['o_wins'] / total_games) * 100:.2f}%)"
-        )
-        print(
-            f"平局率: {ai_vs_ai_results['draws']} ({(ai_vs_ai_results['draws'] / total_games) * 100:.2f}%)"
-        )
-
-        x_vs_random_results = Evaluator.evaluate_vs_random(
-            self._agent_x, Player.PLAYER_X
-        )
-        print("\n--- 评估: AI (X) vs. 随机玩家 ---")
-        total_games = sum(x_vs_random_results.values())
-        print(
-            f"AI 胜率: {x_vs_random_results['wins']} / {total_games} ({(x_vs_random_results['wins'] / total_games) * 100:.2f}%)"
-        )
-        print(
-            f"AI 败率: {x_vs_random_results['losses']} / {total_games} ({(x_vs_random_results['losses'] / total_games) * 100:.2f}%)"
-        )
-        print(
-            f"平局率: {x_vs_random_results['draws']} / {total_games} ({(x_vs_random_results['draws'] / total_games) * 100:.2f}%)"
-        )
-
-        o_vs_random_results = Evaluator.evaluate_vs_random(
-            self._agent_o, Player.PLAYER_O
-        )
-        print("\n--- 评估: AI (O) vs. 随机玩家 ---")
-        total_games = sum(o_vs_random_results.values())
-        print(
-            f"AI 胜率: {o_vs_random_results['wins']} / {total_games} ({(o_vs_random_results['wins'] / total_games) * 100:.2f}%)"
-        )
-        print(
-            f"AI 败率: {o_vs_random_results['losses']} / {total_games} ({(o_vs_random_results['losses'] / total_games) * 100:.2f}%)"
-        )
-        print(
-            f"平局率: {o_vs_random_results['draws']} / {total_games} ({(o_vs_random_results['draws'] / total_games) * 100:.2f}%)"
-        )
-
-        print(f"{'=' * 50}")
-
-    def run_snapshot(self, episode_idx: int, player: Player) -> None:
-        """Create a snapshot of the agent and add it to the opponent pool."""
-        print(f"--- [系统]: 在回合 {episode_idx + 1} 创建 '{player}' 代理的快照 ---")
-        agent = self._agent_x if player == Player.PLAYER_X else self._agent_o
-        self.snapshot_pool[player.value].append(agent.snapshot())
 
 
 def pick_agent(
