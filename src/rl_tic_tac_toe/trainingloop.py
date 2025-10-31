@@ -1,0 +1,141 @@
+"""A module implementing the training loop for a Q-learning Tic-Tac-Toe agent."""
+
+import time
+from dataclasses import dataclass
+from random import Random
+from typing import Optional
+
+from .evaluator import Evaluator
+from .learningparamscheduler import LearningParamPolicy, LearningParamScheduler
+from .player import Player
+from .qlearningagent import QLearningAgent
+from .snapshotpool import SnapshotPool
+from .trainingepisode import TrainingEpisode
+
+EVALUATION_NUM = 20
+SNAPSHOT_NUM = 10
+HISTORICAL_OPPONENT_PROB = 0.3  # 挑战历史对手的概率
+
+
+@dataclass(slots=True)
+class TrainingLoopParams:
+    episodes: int
+    agent_x: QLearningAgent
+    agent_o: QLearningAgent
+    alpha_scheduler: Optional[LearningParamScheduler] = None
+    epsilon_scheduler: Optional[LearningParamScheduler] = None
+    snapshot_pool: Optional[SnapshotPool] = None
+
+
+class TrainingLoop:
+    """A class to manage the training loop of Q-learning agents."""
+
+    def __init__(
+        self,
+        params: TrainingLoopParams,
+        rng: Random = Random(0),
+    ) -> None:
+        assert params.episodes != 0
+        self._episodes = params.episodes
+        assert params.agent_x
+        self._agent_x = params.agent_x
+        assert params.agent_o
+        self._agent_o = params.agent_o
+        self.snapshot_pool = params.snapshot_pool or {
+            "X": [params.agent_x],
+            "O": [params.agent_o],
+        }
+        self.evaluation_interval = max((1, params.episodes // EVALUATION_NUM))
+        self.alpha_scheduler = params.alpha_scheduler or LearningParamScheduler(
+            episodes=params.episodes,
+            policy=LearningParamPolicy.EXPONENTIAL_DECAY,
+            start_value=0.5,
+            min_value=0.01,
+            decay_value=0.9999,
+        )
+        self.epsilon_scheduler = params.epsilon_scheduler or LearningParamScheduler(
+            episodes=params.episodes,
+            policy=LearningParamPolicy.EXPONENTIAL_DECAY,
+            start_value=1.0,
+            min_value=0.01,
+            decay_value=0.9999,
+        )
+        self.rng = rng
+
+    def run(self) -> tuple[QLearningAgent, QLearningAgent]:
+        """Run the training loop for a specified number of episodes."""
+        start_time = time.time()
+
+        for episode_idx in range(self._episodes):
+            playing_x, playing_o = self.pick_opponents(episode_idx, self.rng)
+            TrainingEpisode.run(playing_x, playing_o)
+            self.adjust_learning_params(episode_idx)
+            self.evaluate_and_snapshot_if_needed(episode_idx)
+
+        end_time = time.time()
+        report_training_result(start_time, end_time)
+        return self._agent_x, self._agent_o
+
+    def pick_opponents(
+        self, episode_idx: int, rng: Random
+    ) -> tuple[QLearningAgent, QLearningAgent]:
+        """Pick two opponents from the snapshot pool."""
+        playing_x = self._agent_x
+        playing_o = self._agent_o
+
+        if episode_idx % 2 == 0:
+            pool = self.snapshot_pool[Player.PLAYER_X.value]
+            playing_x = pick_agent(self._agent_x, pool, rng)
+        else:
+            pool = self.snapshot_pool[Player.PLAYER_O.value]
+            playing_o = pick_agent(self._agent_o, pool, rng)
+
+        return playing_x, playing_o
+
+    def adjust_learning_params(self, episode_idx: int) -> None:
+        """Adjust learning parameters for the agents."""
+        agent_x = self._agent_x
+        agent_o = self._agent_o
+        alpha = self.alpha_scheduler.update(episode_idx)
+        agent_x.alpha, agent_o.alpha = alpha, alpha
+        epsilon = self.epsilon_scheduler.update(episode_idx)
+        agent_x.epsilon, agent_o.epsilon = epsilon, epsilon
+
+    def evaluate_and_snapshot_if_needed(self, episode_idx: int) -> None:
+        if (episode_idx + 1) % self.evaluation_interval != 0:
+            return
+        self.run_evaluation(episode_idx)
+        self.run_snapshot(episode_idx, Player.PLAYER_X)
+        self.run_snapshot(episode_idx, Player.PLAYER_O)
+
+    def run_evaluation(self, episode_idx: int) -> None:
+        """Run evaluation of agents and report the results."""
+        progress_percent: float = ((episode_idx + 1) / self._episodes) * 100
+        print(
+            f"\n{'=' * 15} 训练进度: {progress_percent:.0f}% (回合 {episode_idx + 1}/{self._episodes}) {'=' * 15}"
+        )
+        Evaluator.evaluate_agents(self._agent_x, self._agent_o)
+        Evaluator.evaluate_vs_random(self._agent_x, Player.PLAYER_X)
+        Evaluator.evaluate_vs_random(self._agent_o, Player.PLAYER_O)
+        print(f"{'=' * 50}")
+
+    def run_snapshot(self, episode_idx: int, player: Player) -> None:
+        """Create a snapshot of the agent and add it to the opponent pool."""
+        print(f"--- [系统]: 在回合 {episode_idx + 1} 创建 '{player}' 代理的快照 ---")
+        agent = self._agent_x if player == Player.PLAYER_X else self._agent_o
+        self.snapshot_pool[player.value].append(agent.snapshot())
+
+
+def pick_agent(
+    active_agent: QLearningAgent, snapshot_pool: list[QLearningAgent], rng: Random
+) -> QLearningAgent:
+    """Pick an agent, either the active one or a historical snapshot."""
+    picked = active_agent
+    if snapshot_pool and rng.random() < HISTORICAL_OPPONENT_PROB:
+        picked = rng.choice(snapshot_pool)
+    return picked
+
+
+def report_training_result(start_time: float, end_time: float) -> None:
+    """Report the total training time."""
+    print(f"\n训练完成，用时 {end_time - start_time:.2f} 秒。")

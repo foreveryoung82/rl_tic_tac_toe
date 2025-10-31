@@ -1,0 +1,10 @@
+*.pyc
+.conda/
+.vscode/*
+!.vscode/settings.json
+.continue/
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+src/rl_tic_tac_toe.egg-info/
+.pre-commit-config.yaml
