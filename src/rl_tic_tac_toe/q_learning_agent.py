@@ -118,8 +118,8 @@ class QLearningAgent:
         return self.rng.choice(best_moves)
 
     def choose_action_full_exploration(self, game: TicTacToe) -> int:
-        available_moves = game.empty_cells()
-        return self.rng.choice(available_moves)
+        available = game.empty_cells()
+        return self.rng.choice(available)
 
     def update_q_table(
         self,
