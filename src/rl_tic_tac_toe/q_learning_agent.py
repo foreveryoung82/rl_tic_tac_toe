@@ -29,8 +29,11 @@ class QLearningAgent:
     ):
         self._player: Player = player
         self._q_table: dict[str, dict[int, float]] = {}
+        assert isinstance(alpha, float) and (1.0 >= alpha >= 0)
         self._alpha = alpha
+        assert isinstance(gamma, float) and (1.0 >= gamma >= 0)
         self._gamma = gamma
+        assert isinstance(epsilon, float) and (1.0 >= epsilon >= 0)
         self._epsilon = epsilon
         self._rng = rng
         self._is_snapshot = False

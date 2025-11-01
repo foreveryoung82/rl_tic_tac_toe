@@ -23,12 +23,12 @@ class LearningParamScheduler:
         assert isinstance(episodes, int) and episodes > 0
         self._episodes = episodes
         self._policy = policy
-        assert isinstance(start_value, (int, float)) and 1.0 >= start_value >= min_value
+        assert isinstance(start_value, float) and 1.0 >= start_value >= min_value
         self._start = start_value
-        assert isinstance(min_value, (int, float)) and 1.0 >= min_value >= 0.0
+        assert isinstance(min_value, float) and 1.0 >= min_value >= 0.0
         self._min = min_value
         assert (
-            isinstance(decay_value, (int, float)) and 0 < decay_value <= 1
+            isinstance(decay_value, float) and 1 >= decay_value > 0
         ) or decay_value is None
         self._decay = decay_value or pow(min_value / start_value, 1.0 / episodes)
         self._current = start_value
