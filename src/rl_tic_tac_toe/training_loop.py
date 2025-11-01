@@ -6,7 +6,7 @@ from random import Random
 from typing import Optional
 
 from .learning_param_scheduler import (
-    LearningParamScheduler,
+    LearningParamScheduler as Scheduler,
 )
 from .player import Player
 from .q_learning_agent import QLearningAgent
@@ -28,8 +28,8 @@ class TrainingLoopParams:
     episodes: int
     agent_x: QLearningAgent
     agent_o: QLearningAgent
-    alpha_scheduler: Optional[LearningParamScheduler] = None
-    epsilon_scheduler: Optional[LearningParamScheduler] = None
+    alpha_scheduler: Optional[Scheduler] = None
+    epsilon_scheduler: Optional[Scheduler] = None
     snapshot_pool: Optional[SnapshotPool] = None
 
 
@@ -51,15 +51,11 @@ class TrainingLoop:
             "X": [params.agent_x.snapshot()],
             "O": [params.agent_o.snapshot()],
         }
-        self.alpha_scheduler = params.alpha_scheduler or LearningParamScheduler(
-            episodes=params.episodes,
-            start_value=ALPHA_START,
-            min_value=ALPHA_MIN,
+        self.alpha_scheduler = params.alpha_scheduler or Scheduler(
+            params.episodes, ALPHA_START, ALPHA_MIN
         )
-        self.epsilon_scheduler = params.epsilon_scheduler or LearningParamScheduler(
-            episodes=params.episodes,
-            start_value=EPSILON_START,
-            min_value=EPSILON_MIN,
+        self.epsilon_scheduler = params.epsilon_scheduler or Scheduler(
+            params.episodes, EPSILON_START, EPSILON_MIN
         )
         self.rng = rng
         self._reporter = TrainingReporter(
